@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You're Invited — Housewarming</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="house-bg" aria-hidden="true">
+    <img src="images/house.jpg" alt="" />
+    <div class="house-veil"></div>
+  </div>
+  <canvas id="fireworks" class="fireworks" aria-hidden="true"></canvas>
+  <div class="ambiance" aria-hidden="true">
+    <span class="glow glow-a"></span>
+    <span class="glow glow-b"></span>
+  </div>
+
+  <main class="stage">
+    <p class="hint" id="hint">Click the envelope or scroll to open</p>
+
+    <div class="scene" id="scene">
+      <article class="envelope" id="envelope" role="button" tabindex="0" aria-label="Open housewarming invitation">
+        <div class="envelope-back"></div>
+        <div class="card" id="card" aria-hidden="true">
+          <div class="card-inner">
+            <p class="kicker">You're invited</p>
+            <h1>Housewarming</h1>
+            <div class="rule"></div>
+            <p class="hosts">
+              Hosted by<br />
+              <span>Danushka &amp; Vindya</span>
+            </p>
+            <div class="house-icon" aria-hidden="true">
+              <img src="images/house.jpg" alt="" />
+            </div>
+            <p class="detail date">Sunday, 27th of September 2026</p>
+            <p class="detail place">
+              30 Bellavista Crescent<br />
+              Fraser Rise 3336
+            </p>
+            <p class="closing">Come celebrate our new home with us</p>
+          </div>
+        </div>
+
+        <div class="pocket">
+          <div class="pocket-face"></div>
+        </div>
+        <div class="flap">
+          <div class="flap-front"></div>
+          <div class="flap-back"></div>
+        </div>
+        <div class="seal" aria-hidden="true">
+          <span>DV</span>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
