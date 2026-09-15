@@ -1,13 +1,20 @@
 const envelope = document.getElementById("envelope");
-const card = document.getElementById("card");
+const envelopeStage = document.getElementById("envelopeStage");
+const invitation = document.getElementById("invitation");
 const hint = document.getElementById("hint");
 const canvas = document.getElementById("fireworks");
 const ctx = canvas.getContext("2d");
+const soundtrack = document.getElementById("soundtrack");
+const musicToggle = document.getElementById("musicToggle");
+const progress = document.getElementById("progress");
+
+const EVENT_DATE = new Date("2026-09-27T11:00:00+10:00");
+const COLORS = ["#f4d27a", "#fff4d8", "#f08a5d", "#e23e3e", "#7ec8e3", "#f7a1c4", "#ffe066"];
+
 let opened = false;
 let touchStartY = 0;
 let fireworksAnimation = 0;
-
-const COLORS = ["#f4d27a", "#fff4d8", "#f08a5d", "#e23e3e", "#7ec8e3", "#f7a1c4", "#ffe066"];
+let musicEnabled = true;
 
 function resizeCanvas() {
   const width = window.innerWidth;
@@ -175,18 +182,75 @@ function startFireworks() {
   fireworksAnimation = window.requestAnimationFrame(tick);
 }
 
+function pad(value) {
+  return String(value).padStart(2, "0");
+}
+
+function updateCountdown() {
+  const now = Date.now();
+  const distance = Math.max(0, EVENT_DATE.getTime() - now);
+  const days = Math.floor(distance / 86400000);
+  const hours = Math.floor((distance % 86400000) / 3600000);
+  const minutes = Math.floor((distance % 3600000) / 60000);
+  const seconds = Math.floor((distance % 60000) / 1000);
+
+  document.getElementById("days").textContent = pad(days);
+  document.getElementById("hours").textContent = pad(hours);
+  document.getElementById("minutes").textContent = pad(minutes);
+  document.getElementById("seconds").textContent = pad(seconds);
+}
+
+function startCountdown() {
+  updateCountdown();
+  window.setInterval(updateCountdown, 1000);
+}
+
+function updateProgress() {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const ratio = max > 0 ? window.scrollY / max : 0;
+  progress.style.transform = `scaleY(${Math.min(1, Math.max(0, ratio))})`;
+}
+
+async function playMusic() {
+  if (!musicEnabled) return;
+  try {
+    soundtrack.volume = 0.42;
+    await soundtrack.play();
+    musicToggle.classList.remove("is-muted");
+  } catch (error) {
+    musicToggle.classList.add("is-muted");
+  }
+}
+
+function toggleMusic() {
+  musicEnabled = !musicEnabled;
+  if (musicEnabled) {
+    playMusic();
+  } else {
+    soundtrack.pause();
+    musicToggle.classList.add("is-muted");
+  }
+}
+
+function revealInvitation() {
+  invitation.hidden = false;
+  envelopeStage.classList.add("is-leaving");
+  musicToggle.hidden = false;
+  document.body.classList.add("is-open");
+  window.setTimeout(() => {
+    envelopeStage.style.display = "none";
+  }, 850);
+}
+
 function openEnvelope() {
   if (opened) return;
   opened = true;
   envelope.classList.add("open");
-  document.body.classList.add("is-open");
   envelope.setAttribute("aria-label", "Housewarming invitation");
-  card.setAttribute("aria-hidden", "false");
   hint.classList.add("hidden");
-  window.setTimeout(() => {
-    card.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, 450);
+  playMusic();
   window.setTimeout(startFireworks, 200);
+  window.setTimeout(revealInvitation, 1400);
 }
 
 envelope.addEventListener("click", openEnvelope);
@@ -197,10 +261,13 @@ envelope.addEventListener("keydown", (event) => {
   }
 });
 
+musicToggle.addEventListener("click", toggleMusic);
+window.addEventListener("scroll", updateProgress, { passive: true });
+
 window.addEventListener(
   "wheel",
   (event) => {
-    if (event.deltaY > 24) openEnvelope();
+    if (!opened && event.deltaY > 24) openEnvelope();
   },
   { passive: true }
 );
@@ -217,7 +284,10 @@ window.addEventListener(
   "touchend",
   (event) => {
     const distance = touchStartY - event.changedTouches[0].clientY;
-    if (distance > 48) openEnvelope();
+    if (!opened && distance > 48) openEnvelope();
   },
   { passive: true }
 );
+
+startCountdown();
+updateProgress();
